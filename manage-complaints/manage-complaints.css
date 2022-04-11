@@ -1,0 +1,27 @@
+.backround{
+	margin: 1.3rem;
+	padding: 1rem;
+	background-color: #fff;
+	border-radius: .4rem;
+	box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+.flexclass{
+	display: flex;
+	justify-content: space-between;
+}
+
+small{
+	color: #000;
+}
+
+.iconstyle{
+	font-size: 1rem;
+	cursor: pointer;
+	color: red;
+}
+
+.smlcls{
+	margin-top: -1.3rem;
+	margin-left: 1.8rem;
+}
