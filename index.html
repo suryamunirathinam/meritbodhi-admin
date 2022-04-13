@@ -25,7 +25,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-auth.js"></script>
-    <script src="https://meritbodhi.co.in/js/connect.js"></script>
+    <script src="./js/connect.js"></script>
+
     <script src="https://kit.fontawesome.com/28d953b416.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css" integrity="sha512-ARJR74swou2y0Q2V9k0GbzQ/5vJ2RBSoCWokg4zkfM29Fb3vZEQyv0iWBMW/yvKgyHSR/7D64pFMmU8nYmbRkg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -212,164 +213,166 @@
                </div></div>
               
               
-<script>
+             
+               <script>
     
-   const form=document.getElementById('institute-login-details');
-    
-    
-
-    //loggin in user with authentication
-
-
-   form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        var btns = document.querySelectorAll('.btn-layer');
-        for (var i = 0; i < btns.length; i++) {
-           btns[i].style.display="none";
-        }
-        var uname=form.iuname.value
-        let pass=form.ipass.value;
-        auth.signInWithEmailAndPassword(uname,pass).then((a)=>{
-         if (a) {
-            console.log(a.user.uid);
-         document.getElementById('loaderForDashb').style.display="block";
-         localforage.setItem("fullAuth", a.user.displayName+'-*de*-'+a.user.photoURL);     
-         data.collection('institute').doc(a.user.uid).get().then((snapshot)=>{
-            if(snapshot.data().isVerified==true){
-                localforage.setItem('instituteDetails', snapshot.data()).then(()=>{
-                    mainCArray=[];
-                    subCArray=[];
-                    nationalMainC=[];
-                    interNationalMainC=[];
-                    data.collection('category').doc('categories').get().then((arg)=>{
-                        var argArray=arg.data().catDetails;
-                        argArray.forEach((arrayElement)=>{
-                            mainCArray.push(arrayElement.categoryName);
-                            subCArray.push(arrayElement.subcategoryList);
-
-                            if(arrayElement.type=='National' && arrayElement.isVerified==true){
-                                nationalMainC.push(arrayElement.categoryName);
-                            }
-
-                            if(arrayElement.type=='International' && arrayElement.isVerified==true){
-                                interNationalMainC.push(arrayElement.categoryName);
-                            }
-                        });
-
-                        localforage.setItem('mainCategories', mainCArray).then(()=>{
-                            localforage.setItem('subCategories', subCArray).then(()=>{
-                                localforage.setItem('nationalMainC', nationalMainC).then(()=>{
-                                    localforage.setItem('interNationalMainC', interNationalMainC).then(()=>{
-                                        location.replace("../dashboard");
-                                    });
-                                });
-                            });
-                        });
-                    });
-                })
-            } else if (snapshot.data().isVerified==false && snapshot.data().rejected==true){
-                localforage.setItem('instituteDetails', snapshot.data()).then(()=>{
-                    location.replace("../re-apply/institute");
-                })
-                
-            }else{
-                showToast('You are not yet verified !!');
-            }
-          })
-            
-         
-         
-          }
-          else{
-            showToast('something went wrong !!');
-          }
-      }).catch((e)=>{
-         showToast(e.message);
-      });
-   });
-
-var form2 = document.getElementById('faculty-login-details');
-   form2.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        
-        var btns = document.querySelectorAll('.btn-layer');
-        for (var i = 0; i < btns.length; i++) {
-           btns[i].style.display="none";
-        }
-        var uname=form2.facuusername.value
-        let pass=form2.facupasswd.value;
-        auth.signInWithEmailAndPassword(uname,pass).then((a)=>{
-         if (a) {
-            console.log(a.user.uid);
-         document.getElementById('loaderForDashb').style.display="block";
-         
-         data.collection('faculty').doc(a.user.uid).get().then((snapshot)=>{
-              if (snapshot.data().status=="Verified") {
-              localforage.setItem('facultyDetails', snapshot.data()).then(()=>{
-
-                     mainCArray=[];
-                     subCArray=[];
-                     nationalMainC=[];
-                     interNationalMainC=[];
-                     data.collection('category').doc('categories').get().then((arg)=>{
-                         var argArray=arg.data().catDetails;
-                          argArray.forEach((arrayElement)=>{
-                              mainCArray.push(arrayElement.categoryName);
-                              subCArray.push(arrayElement.subcategoryList);
-
-                              if(arrayElement.type=='National' && arrayElement.isVerified==true){
-                                  nationalMainC.push(arrayElement.categoryName);
-                              }
-
-                              if(arrayElement.type=='International' && arrayElement.isVerified==true){
-                                  interNationalMainC.push(arrayElement.categoryName);
-                              }
-                          });
-
-                          localforage.setItem('mainCategories', mainCArray).then(()=>{
-                              localforage.setItem('subCategories', subCArray).then(()=>{
-                                  localforage.setItem('nationalMainC', nationalMainC).then(()=>{
-                                      localforage.setItem('interNationalMainC', interNationalMainC).then(()=>{
-                                          localforage.getItem('facultyDetails').then((a)=>{
-                                            localforage.setItem("fullAuthF", a.name+'-*de*-'+a.profileImage);     
-                                          })
-                                          location.replace("../faculty-dashboard");
-                                      });
-                                  });
-                              });
-                          });
-                      });
-              })
-                }
-                else if (snapshot.data().status=="Rejected") {
-                    localforage.setItem('facultyDetails', snapshot.data()).then(()=>{
-                        location.replace("../re-apply/faculty");
-                    })
-                }
-                else{
-                    showToast('You are not yet Verified!!');
-                }
-              
-          })
-            
-         
-         
-          }
-          else{
-            showToast('something went wrong !!');
-          }
-      }).catch((e)=>{
-         showToast(e.message);
-      });
-   });
-   function showToast(msg) {
-          var x = document.getElementById("snackbar");
-          x.innerHTML=msg;
-          x.className = "show";
-          setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
-        }
-      
-</script>
+                const form=document.getElementById('institute-login-details');
+                 
+                 
+             
+                 //loggin in user with authentication
+             
+             
+                form.addEventListener('submit', (e) => {
+                     e.preventDefault();
+                     var btns = document.querySelectorAll('.btn-layer');
+                     for (var i = 0; i < btns.length; i++) {
+                        btns[i].style.display="none";
+                     }
+                     var uname=form.iuname.value
+                     let pass=form.ipass.value;
+                     auth.signInWithEmailAndPassword(uname,pass).then((a)=>{
+                      if (a) {
+                         console.log(a.user.uid);
+                      document.getElementById('loaderForDashb').style.display="block";
+                      localforage.setItem("fullAuth", a.user.displayName+'-*de*-'+a.user.photoURL);     
+                      data.collection('institute').doc(a.user.uid).get().then((snapshot)=>{
+                         if(snapshot.data().isVerified==true){
+                             localforage.setItem('instituteDetails', snapshot.data()).then(()=>{
+                                 mainCArray=[];
+                                 subCArray=[];
+                                 nationalMainC=[];
+                                 interNationalMainC=[];
+                                 data.collection('category').doc('categories').get().then((arg)=>{
+                                     var argArray=arg.data().catDetails;
+                                     argArray.forEach((arrayElement)=>{
+                                         mainCArray.push(arrayElement.categoryName);
+                                         subCArray.push(arrayElement.subcategoryList);
+             
+                                         if(arrayElement.type=='National' && arrayElement.isVerified==true){
+                                             nationalMainC.push(arrayElement.categoryName);
+                                         }
+             
+                                         if(arrayElement.type=='International' && arrayElement.isVerified==true){
+                                             interNationalMainC.push(arrayElement.categoryName);
+                                         }
+                                     });
+             
+                                     localforage.setItem('mainCategories', mainCArray).then(()=>{
+                                         localforage.setItem('subCategories', subCArray).then(()=>{
+                                             localforage.setItem('nationalMainC', nationalMainC).then(()=>{
+                                                 localforage.setItem('interNationalMainC', interNationalMainC).then(()=>{
+                                                     location.replace("../dashboard/");
+                                                 });
+                                             });
+                                         });
+                                     });
+                                 });
+                             })
+                         } else if (snapshot.data().isVerified==false && snapshot.data().rejected==true){
+                             localforage.setItem('instituteDetails', snapshot.data()).then(()=>{
+                                 location.replace("../re-apply/institute/");
+                             })
+                             
+                         }else{
+                             showToast('You are not yet verified !!');
+                         }
+                       })
+                         
+                      
+                      
+                       }
+                       else{
+                         showToast('something went wrong !!');
+                       }
+                   }).catch((e)=>{
+                      showToast(e.message);
+                   });
+                });
+             
+             var form2 = document.getElementById('faculty-login-details');
+                form2.addEventListener('submit', (e) => {
+                     e.preventDefault();
+             
+                     
+                     var btns = document.querySelectorAll('.btn-layer');
+                     for (var i = 0; i < btns.length; i++) {
+                        btns[i].style.display="none";
+                     }
+                     var uname=form2.facuusername.value
+                     let pass=form2.facupasswd.value;
+                     auth.signInWithEmailAndPassword(uname,pass).then((a)=>{
+                      if (a) {
+                         console.log(a.user.uid);
+                      document.getElementById('loaderForDashb').style.display="block";
+                      
+                      data.collection('faculty').doc(a.user.uid).get().then((snapshot)=>{
+                        console.log(snapshot.data())
+                           if (snapshot.data().status=="Verified") {
+                           localforage.setItem('facultyDetails', snapshot.data()).then(()=>{
+             
+                                  mainCArray=[];
+                                  subCArray=[];
+                                  nationalMainC=[];
+                                  interNationalMainC=[];
+                                  data.collection('category').doc('categories').get().then((arg)=>{
+                                      var argArray=arg.data().catDetails;
+                                       argArray.forEach((arrayElement)=>{
+                                           mainCArray.push(arrayElement.categoryName);
+                                           subCArray.push(arrayElement.subcategoryList);
+             
+                                           if(arrayElement.type=='National' && arrayElement.isVerified==true){
+                                               nationalMainC.push(arrayElement.categoryName);
+                                           }
+             
+                                           if(arrayElement.type=='International' && arrayElement.isVerified==true){
+                                               interNationalMainC.push(arrayElement.categoryName);
+                                           }
+                                       });
+             
+                                       localforage.setItem('mainCategories', mainCArray).then(()=>{
+                                           localforage.setItem('subCategories', subCArray).then(()=>{
+                                               localforage.setItem('nationalMainC', nationalMainC).then(()=>{
+                                                   localforage.setItem('interNationalMainC', interNationalMainC).then(()=>{
+                                                       localforage.getItem('facultyDetails').then((a)=>{
+                                                         localforage.setItem("fullAuthF", a.name+'-*de*-'+a.profileImage);     
+                                                       })
+                                                       location.replace("../faculty-dashboard/");
+                                                   });
+                                               });
+                                           });
+                                       });
+                                   });
+                           })
+                             }
+                             else if (snapshot.data().status=="Rejected") {
+                                 localforage.setItem('facultyDetails', snapshot.data()).then(()=>{
+                                     location.replace("../re-apply/faculty/");
+                                 })
+                             }
+                             else{
+                                 showToast('You are not yet Verified!!');
+                             }
+                           
+                       })
+                         
+                      
+                      
+                       }
+                       else{
+                         showToast('something went wrong !!');
+                       }
+                   }).catch((e)=>{
+                      showToast(e.message);
+                   });
+                });
+                function showToast(msg) {
+                       var x = document.getElementById("snackbar");
+                       x.innerHTML=msg;
+                       x.className = "show";
+                       setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
+                     }
+                   
+             </script>
 </body>
 </html>
